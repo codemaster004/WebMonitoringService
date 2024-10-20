@@ -2,6 +2,9 @@
 .venv
 venv
 
+# Ignore IDE config files
+.idea
+
 # Ignore private .env files
 *.env
 .env
