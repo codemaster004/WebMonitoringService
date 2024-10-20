@@ -12,9 +12,11 @@ class BaseScraper:
 		'model': None,
 	}
 	
-	def __init__(self, dev_mode: bool = False):
+	def __init__(self, selectors=None, dev_mode: bool = False):
 		if not dev_mode:
 			self._options.add_argument("--headless")
+		if selectors:
+			self.selectors = selectors
 		
 		self._options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
 		self._driver = webdriver.Firefox(options=self._options)
