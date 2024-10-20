@@ -7,11 +7,13 @@ data_files:
 
 websites:
   x_kom:
+    key: "x_kom"
     scrap_target:
-      <<: *gpu_target
-      urls:
-        - "https://www.x-kom.pl/g-5/c/345-karty-graficzne.html"
-    product_tile_selector: ".parts__ProductCardWrapper-sc-6e280ffa-3"
-    price_selector: ".parts__Price-sc-6e255ce0-0"
-    model_selector: ".parts__ListItem-sc-27c8b4c9-2"
+      - all_gpus:
+        <<: *gpu_target
+        url: "https://www.x-kom.pl/g-5/c/345-karty-graficzne.html"
+    selectors:
+      tile: ".parts__ProductCardWrapper-sc-6e280ffa-3"
+      price: ".parts__Price-sc-6e255ce0-0"
+      model: ".parts__ListItem-sc-27c8b4c9-2"
 
