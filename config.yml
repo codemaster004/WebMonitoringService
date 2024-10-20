@@ -2,18 +2,20 @@
 dev_mode: true
 
 data_files:
-  gpu: &gpu_target
-    data_file: "data/gpu.csv"
+  cases: &case_target
+    data_file: "data/mini_case.csv"
 
 websites:
   x_kom:
     key: "x_kom"
     scrap_target:
-      - all_gpus:
-        <<: *gpu_target
-        url: "https://www.x-kom.pl/g-5/c/345-karty-graficzne.html"
+      - fractal_cases:
+        <<: *case_target
+        url: "https://www.x-kom.pl/g-5/c/389-obudowy-do-komputera.html?f3471-typ-obudowy=47720-micro-tower&f3471-typ-obudowy=47723-small-form-factor-sff&f3471-typ-obudowy=48701-mini-itx&f3471-typ-obudowy=49475-mini-tower"
     selectors:
-      tile: ".parts__ProductCardWrapper-sc-6e280ffa-3"
+      cookie: ".parts__AcceptButton-sc-22bd9b2d-9"
+      card: ".parts__ProductCardWrapper-sc-6e280ffa-3"
+      title: ".parts__Title-sc-1d28d-0"
       price: ".parts__Price-sc-6e255ce0-0"
-      model: ".parts__ListItem-sc-27c8b4c9-2"
-
+      info: ".parts__ListItem-sc-27c8b4c9-2"
+      next: ".parts__NextButton-sc-d8adfe33-3"
