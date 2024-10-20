@@ -1,0 +1,17 @@
+# config.yml
+dev_mode: true
+
+data_files:
+  gpu: &gpu_target
+    data_file: "data/gpu.csv"
+
+websites:
+  x_kom:
+    scrap_target:
+      <<: *gpu_target
+      urls:
+        - "https://www.x-kom.pl/g-5/c/345-karty-graficzne.html"
+    product_tile_selector: ".parts__ProductCardWrapper-sc-6e280ffa-3"
+    price_selector: ".parts__Price-sc-6e255ce0-0"
+    model_selector: ".parts__ListItem-sc-27c8b4c9-2"
+
