@@ -44,6 +44,9 @@ class BaseScraper:
 		self._visit_all_pagination(collected_data)  # Start collecting the data and visiting next pagination's
 		return collected_data
 	
+	def close(self):
+		self._driver.close()
+	
 	def _visit_all_pagination(self, collected_data):
 		""" Visits all pages by finding and clicking the 'next' button and collects data """
 		while True:

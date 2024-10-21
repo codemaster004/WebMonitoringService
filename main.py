@@ -19,23 +19,24 @@ if __name__ == '__main__':
 	
 	# Iterate over websites all websites we scrap data from
 	for website in config['websites'].values():
-		# Try setting up a scraper for a website, in case of failing skip to next website
-		try:
-			key = website['key']  # key for selecting scrapper
-			my_scraper = scrapers.web_scrapers[key](website['selectors'], dev_mode)
-		except KeyError as e:
-			print(f"ERROR: Key error while setting up the scrapper: {e}")
-			print("INFO: Skipping to the next webpage.")
-			continue
-		except UnsupportedSelectorsFormat as e:
-			print(f"ERROR: {e}")
-			print("INFO: Skipping to the next webpage.")
-			continue
-		
-		print(f"INFO: Beginning scraping data for {key}")
-		
 		# Scap separately for few targets on the same website
 		for target in website['scrap_target']:
+			# Try setting up a scraper for a website, in case of failing skip to next website
+			try:
+				key = website['key']  # key for selecting scrapper
+				# Browser Creation is per target to go around some bot-classification lags
+				my_scraper = scrapers.web_scrapers[key](website['selectors'], dev_mode)
+			except KeyError as e:
+				print(f"ERROR: Key error while setting up the scrapper: {e}")
+				print("INFO: Skipping to the next webpage.")
+				continue
+			except UnsupportedSelectorsFormat as e:
+				print(f"ERROR: {e}")
+				print("INFO: Skipping to the next webpage.")
+				continue
+			
+			print(f"INFO: Beginning scraping data for {key} with target {target['data_file']}")
+			
 			data_file_path = target['data_file']  # Save values in data file under this path
 			
 			url = target['url']
