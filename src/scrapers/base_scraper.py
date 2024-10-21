@@ -34,6 +34,7 @@ class BaseScraper:
 		""" Main method to scrape a page and returns the collected data """
 		self._open_page(url)  # Open first page of the target
 		self._accept_cookies()  # Accept cookies to get rid of the popup
+		# todo: ^ only when first open do try or smt
 		
 		collected_data = []  # List for the all the collected data from scraping
 		self._visit_all_pagination(collected_data)  # Start collecting the data and visiting next pagination's
