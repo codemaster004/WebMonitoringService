@@ -144,7 +144,8 @@ class BaseScraper:
 	def _get_element(element: WebElement, css_selector: str) -> WebElement | None:
 		""" Base method for finding a web element """
 		try:
-			found = element.find_elements(By.CSS_SELECTOR, css_selector)
+			# Use find_elements stead of single element as this won't raise an exception when no element is found
+			found = element.find_elements(By.CSS_SELECTOR, css_selector)  # todo: use standard method with targeted except
 			return None if found == [] else found[0]
 		except NoSuchElementException:
 			print(f"WARNING: No element matching {css_selector} found!")
