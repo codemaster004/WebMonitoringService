@@ -1,15 +1,29 @@
 # config.yml
-dev_mode: true
+dev_mode: false
 
 data_files:
   cases: &case_target
     data_file: "data/mini_case.csv"
 
 websites:
+#  website_name:
+#    key: "<Key for selecting scrapper>"
+#    selectors:
+#      cookie: "<CSS Selector for cookie accept button>"
+#      card: "<CSS Selector for product Card>"
+#      title: "<CSS Selector for title of the product>"
+#      price: "<CSS Selector for price of thr product>"
+#      info: "<CSS Selector for some additional info to be queried>"
+#      next: "<CSS Selector for the next page button>"
+#    scrap_target:
+#      - target_name:
+#          <<: *variable_for_file_name
+#          url: "URL to the first page from which to start scraping"
+  
   x_kom:
     key: "x_kom"
     scrap_target:
-      - fractal_cases:
+      - mini_cases:
         <<: *case_target
         url: "https://www.x-kom.pl/g-5/c/389-obudowy-do-komputera.html?f3471-typ-obudowy=47720-micro-tower&f3471-typ-obudowy=47723-small-form-factor-sff&f3471-typ-obudowy=48701-mini-itx&f3471-typ-obudowy=49475-mini-tower"
     selectors:
