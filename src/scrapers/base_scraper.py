@@ -15,6 +15,8 @@ class BaseScraper:
 	_driver = None  # Web browser driver to be set in the __init__ after configuring options
 	_selectors = {}  # CSS selectors for various parts of scraping, e.g., price, title, etc.
 	
+	_body: WebElement | None = None  # HTML Body element for running searches on
+	
 	def __init__(self, selectors, dev_mode: bool = False):
 		# In Developer Mode, the GUI of the browser will be visible for easier testing
 		if not dev_mode:
@@ -33,8 +35,10 @@ class BaseScraper:
 	def scrap_page(self, url):
 		""" Main method to scrape a page and returns the collected data """
 		self._open_page(url)  # Open first page of the target
+		if self._body is None:
+			return  # Aboard when webpage is not able to be scraped
+		
 		self._accept_cookies()  # Accept cookies to get rid of the popup
-		# todo: ^ only when first open do try or smt
 		
 		collected_data = []  # List for the all the collected data from scraping
 		self._visit_all_pagination(collected_data)  # Start collecting the data and visiting next pagination's
@@ -66,11 +70,21 @@ class BaseScraper:
 			self._driver.implicitly_wait(5)
 		except Exception as e:
 			print(f"ERROR: While fetching {url} - {e}")
+		
+		self._body = None
+		try:
+			self._body = self._driver.find_element(By.CLASS_NAME, 'body')
+		except NoSuchElementException:
+			print(f"ERROR: The webpage does not contain body element! Aborting.")
 	
 	def _accept_cookies(self):
 		""" Handles cookie acceptance if required by the site """
-		self._driver.implicitly_wait(3)
-		self._driver.find_element(By.CSS_SELECTOR, self.selectors['cookie']).click()  # todo: our wrapper
+		self._driver.implicitly_wait(2)  # Wait for popup to appear
+		cookie_button = self._get_element(self._body, self.selectors['cookie'])
+		if cookie_button is None:  # Guard if the browser remembers that cookies were already accepted
+			return
+		
+		cookie_button.click()
 		self._driver.implicitly_wait(1)
 	
 	def _get_all_offer_cards(self):
@@ -95,6 +109,10 @@ class BaseScraper:
 		found = self._driver.find_elements(By.CSS_SELECTOR, self.selectors['next'])  # todo: our wrapper
 		return None if found == [] else found[0]
 	
+	# --------------------- #
+	#   Getters & Setters   #
+	# --------------------- #
+	
 	@property
 	def selectors(self):
 		""" Property getter for selectors """
@@ -104,6 +122,11 @@ class BaseScraper:
 	def selectors(self, new_value):
 		""" Property setter for selectors """
 		self._selectors = new_value
+	
+	# ------------------------- #
+	#   Basic Get/Find Methods  #
+	#   Please do no overload   #
+	# ------------------------- #
 	
 	@staticmethod
 	def _get_numeric_value(offer_card: WebElement, css_selector: str):
@@ -123,9 +146,17 @@ class BaseScraper:
 		try:
 			found = element.find_elements(By.CSS_SELECTOR, css_selector)
 			return None if found == [] else found[0]
+		except NoSuchElementException:
+			print(f"WARNING: No element matching {css_selector} found!")
+			return None
 		except Exception as e:  # Temporary for testing to see what exceptions appear
 			print(f"WARNING: Exception while finding an element {e}")
 			return None
+	
+	@staticmethod
+	def _get_elements(element: WebElement, css_selector: str) -> list[WebElement]:
+		""" Base Method for finding all web elements """
+		return element.find_elements(By.CSS_SELECTOR, css_selector)
 	
 	@staticmethod
 	def _to_int(text: str):
@@ -133,6 +164,10 @@ class BaseScraper:
 		# Converts the cleaned text to an integer
 		cleaned_text = re.sub(r'\D', '', text)
 		return int(cleaned_text)
+	
+	# -------------------- #
+	#   Private Methods    #
+	# -------------------- #
 	
 	@staticmethod
 	def __validate_selectors(selector_dict):
