@@ -74,7 +74,7 @@ class BaseScraper:
 		self._body = None
 		try:
 			# Try retrieving body element for running future searches on
-			self._body = self._driver.find_element(By.CLASS_NAME, 'body')
+			self._body = self._driver.find_element(By.TAG_NAME, 'body')
 		except NoSuchElementException:
 			print(f"ERROR: The webpage does not contain body element! Aborting.")
 	
