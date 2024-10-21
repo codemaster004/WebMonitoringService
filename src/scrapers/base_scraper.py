@@ -2,6 +2,7 @@ import re
 from time import sleep
 
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.remote.webelement import WebElement
@@ -68,16 +69,17 @@ class BaseScraper:
 	def _accept_cookies(self):
 		""" Handles cookie acceptance if required by the site """
 		self._driver.implicitly_wait(3)
-		self._driver.find_element(By.CSS_SELECTOR, self.selectors['cookie']).click()
+		self._driver.find_element(By.CSS_SELECTOR, self.selectors['cookie']).click()  # todo: our wrapper
 		self._driver.implicitly_wait(1)
 	
 	def _get_all_offer_cards(self):
 		""" Retrieves all offer cards from the current page """
-		return self._driver.find_elements(By.CSS_SELECTOR, self.selectors['card'])
+		return self._driver.find_elements(By.CSS_SELECTOR, self.selectors['card'])  # todo: our wrapper
 	
 	def _get_price(self, offer_card: WebElement):
 		""" Extracts and returns the price from an offer card """
-		return self._get_numeric_value(offer_card, self.selectors['price']) / 100
+		found_number = self._get_numeric_value(offer_card, self.selectors['price'])
+		return None if found_number is None else found_number / 100
 	
 	def _get_title(self, offer_card: WebElement):
 		""" Extracts and returns the title from an offer card """
@@ -89,7 +91,7 @@ class BaseScraper:
 	
 	def _get_next_page_button(self) -> WebElement:
 		""" Finds and returns the Next button on the page or None if not found """
-		found = self._driver.find_elements(By.CSS_SELECTOR, self.selectors['next'])
+		found = self._driver.find_elements(By.CSS_SELECTOR, self.selectors['next'])  # todo: our wrapper
 		return None if found == [] else found[0]
 	
 	@property
@@ -105,14 +107,24 @@ class BaseScraper:
 	@staticmethod
 	def _get_numeric_value(offer_card: WebElement, css_selector: str):
 		""" Extracts a numeric value from an offer card """
-		found = offer_card.find_elements(By.CSS_SELECTOR, css_selector)
-		return None if found == [] else BaseScraper._to_int(found[0].text)
+		text = BaseScraper._get_text_value(offer_card, css_selector)
+		return None if text is None else BaseScraper._to_int(text)
 	
 	@staticmethod
 	def _get_text_value(offer_card: WebElement, css_selector: str):
 		""" Extracts a text value from an offer card """
-		found = offer_card.find_elements(By.CSS_SELECTOR, css_selector)
-		return None if found == [] else found[0].text
+		found = BaseScraper._get_element(offer_card, css_selector)
+		return None if found is None else found.text
+	
+	@staticmethod
+	def _get_element(element: WebElement, css_selector: str) -> WebElement | None:
+		""" Base method for finding a web element """
+		try:
+			found = element.find_elements(By.CSS_SELECTOR, css_selector)
+			return None if found == [] else found[0]
+		except Exception as e:  # Temporary for testing to see what exceptions appear
+			print(f"WARNING: Exception while finding an element {e}")
+			return None
 	
 	@staticmethod
 	def _to_int(text: str):
