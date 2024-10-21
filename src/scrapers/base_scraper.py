@@ -73,6 +73,7 @@ class BaseScraper:
 		
 		self._body = None
 		try:
+			# Try retrieving body element for running future searches on
 			self._body = self._driver.find_element(By.CLASS_NAME, 'body')
 		except NoSuchElementException:
 			print(f"ERROR: The webpage does not contain body element! Aborting.")
@@ -85,11 +86,11 @@ class BaseScraper:
 			return
 		
 		cookie_button.click()
-		self._driver.implicitly_wait(1)
+		self._driver.implicitly_wait(1)  # wait for the closing animation
 	
 	def _get_all_offer_cards(self):
 		""" Retrieves all offer cards from the current page """
-		return self._driver.find_elements(By.CSS_SELECTOR, self.selectors['card'])  # todo: our wrapper
+		return self._get_elements(self._body, self.selectors['card'])
 	
 	def _get_price(self, offer_card: WebElement):
 		""" Extracts and returns the price from an offer card """
@@ -106,8 +107,7 @@ class BaseScraper:
 	
 	def _get_next_page_button(self) -> WebElement:
 		""" Finds and returns the Next button on the page or None if not found """
-		found = self._driver.find_elements(By.CSS_SELECTOR, self.selectors['next'])  # todo: our wrapper
-		return None if found == [] else found[0]
+		return self._get_element(self._body, self.selectors['next'])
 	
 	# --------------------- #
 	#   Getters & Setters   #
